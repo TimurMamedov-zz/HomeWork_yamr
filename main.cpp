@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 //        std::ifstream in(argv[1], std::ios::binary | std::ios::ate);
         std::ifstream in("emails.txt", std::ios::binary | std::ios::ate);
 //        auto mnum = std::atoi(argv[2]);
-        auto mnum = 7;
+        auto mnum = 6;
         auto endPos = in.tellg();
         in.clear();
         in.seekg(0, std::ios_base::beg);
@@ -45,10 +45,15 @@ int main(int argc, char *argv[])
             for(auto& pair : pos_map)
                 if(pair.second == -1)
                 {
-                    pos_map[pair.first] = newPos;
-                    if(newPos != endPos)
-                        pos_map[newPos] = -1;
-                    break;
+                    if(newPos != -1)
+                    {
+                        pos_map[pair.first] = newPos;
+                        if(newPos != endPos)
+                            pos_map[newPos] = -1;
+                        break;
+                    }
+                    else
+                        pos_map[pair.first] = endPos;
                 }
 
             std::cout << "newPos " << newPos << std::endl;
