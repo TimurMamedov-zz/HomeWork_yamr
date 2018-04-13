@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
-#include <map>
+#include <vector>
+#include "MiniHadoop.h"
 
 int main(int argc, char *argv[])
 {
@@ -12,19 +13,26 @@ int main(int argc, char *argv[])
 //            return 1;
 //        }
 //        std::ifstream in(argv[1], std::ios::binary | std::ios::ate);
-        std::ifstream in("emails.txt", std::ios::binary | std::ios::ate);
+        std::string src = "emails.txt";
+        std::ifstream in(src, std::ios::binary | std::ios::ate);
 //        auto mnum = std::atoi(argv[2]);
-        auto mnum = 6;
+//        if(mnum > 0 && rnum > 0)
+//        {
+
+//        }
+        auto mnum = std::size_t{7};
         auto endPos = in.tellg();
+
         in.clear();
         in.seekg(0, std::ios_base::beg);
-        auto part = endPos/mnum;
-        std::cout << "part " << part << std::endl;
-        std::map<int, int> pos_map;
-        auto newPos = part;
-        pos_map[0] = -1;
 
-        for(auto i = 1; i <= mnum; i++)
+        auto part = endPos/mnum;
+        std::vector<std::size_t> pos_vec;
+        pos_vec.emplace_back(0);
+
+        auto newPos = part;
+
+        for(auto i = std::size_t{0}; i < mnum; i++)
         {
             in.seekg(part, std::ios_base::cur);
             if(in.tellg() < endPos)
@@ -32,40 +40,45 @@ int main(int argc, char *argv[])
                 char c = in.peek();
                 while(c != '\n' && in.tellg() != -1)
                 {
-    //                std::cout << "peek " << c << std::endl;
                     c = in.get();
                 }
                 newPos = in.tellg();
             }
             else
-            {
                 newPos = endPos;
-            }
 
-            for(auto& pair : pos_map)
-                if(pair.second == -1)
-                {
-                    if(newPos != -1)
-                    {
-                        pos_map[pair.first] = newPos;
-                        if(newPos != endPos)
-                            pos_map[newPos] = -1;
-                        break;
-                    }
-                    else
-                        pos_map[pair.first] = endPos;
-                }
+            if(pos_vec[pos_vec.size() - 1] == endPos)
+                break;
 
-            std::cout << "newPos " << newPos << std::endl;
-            std::cout << "in.tellg() " << in.tellg() << std::endl;
+            if(newPos != -1)
+                pos_vec.emplace_back(newPos);
+            else
+                pos_vec.emplace_back(endPos);
 
             newPos += part;
         }
+//
 
-        for(auto& pair : pos_map)
-            std::cout << "begin: " << pair.first << ", end: " << pair.second << std::endl;
 
-        in.close();
+//        for(auto i = std::size_t{0}; i < pos_vec.size(); i++)
+//        {
+//            if(i + 1 < pos_vec.size())
+//            {
+//                std::string str;
+//                auto size = pos_vec[i+1] - pos_vec[i];
+//                str.resize(size);
+//                in.read(&str[0], size);
+//                std::cout << str << std::endl << std::endl;
+//            }
+//        }
+
+//        for(auto& item : pos_vec)
+//            std::cout << "item: " << item << std::endl;
+//        std::cout << "size: " << pos_vec.size() << std::endl;
+        in.clear();
+        in.seekg(0, std::ios_base::beg);
+
+        MiniHadoop hadoop(in, std::move(pos_vec));
     }
     catch (std::exception& e)
     {
