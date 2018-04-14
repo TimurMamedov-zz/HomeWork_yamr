@@ -1,19 +1,29 @@
 #include "MiniHadoop.h"
 #include <iostream>
 
-MiniHadoop::MiniHadoop(std::ifstream& in,
-                       std::vector<std::size_t> pos_vec)
+MiniHadoop::MiniHadoop(std::string path,
+                       std::vector<std::size_t> pos_vec,
+                       int nnum_,
+                       std::function<void()> mapHandle,
+                       std::function<void()> reduceHandle)
+    :nnum(nnum_), mapping(mapHandle), reduce(reduceHandle)
 {
-    for(auto i = std::size_t{0}; i < pos_vec.size(); i++)
+    std::ifstream in(path, std::ios::binary | std::ios::ate);
+
+    if(in.is_open())
     {
-        if(i + 1 < pos_vec.size())
+        in.clear();
+        in.seekg(0, std::ios_base::beg);
+        for(auto i = std::size_t{0}; i < pos_vec.size(); i++)
         {
-            std::string str;
-            auto size = pos_vec[i+1] - pos_vec[i];
-            str.resize(size);
-            in.read(&str[0], size);
-            std::cout << str << std::endl << std::endl;
+            if(i + 1 < pos_vec.size())
+            {
+                std::string str;
+                auto size = pos_vec[i+1] - pos_vec[i];
+                str.resize(size);
+                in.read(&str[0], size);
+                std::cout << str << std::endl << std::endl;
+            }
         }
     }
-    in.close();
 }
