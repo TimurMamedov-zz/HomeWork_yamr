@@ -1,29 +1,42 @@
 #include "MiniHadoop.h"
 #include <iostream>
+#include <algorithm>
+#include <future>
 
 MiniHadoop::MiniHadoop(std::string path,
                        std::vector<std::size_t> pos_vec,
-                       int nnum_,
-                       std::function<void()> mapHandle,
-                       std::function<void()> reduceHandle)
-    :nnum(nnum_), mapping(mapHandle), reduce(reduceHandle)
+                       int rnum)
+    :mapping(std::move(path), std::move(pos_vec)),
+      reduce(rnum)
 {
-    std::ifstream in(path, std::ios::binary | std::ios::ate);
+}
 
-    if(in.is_open())
+void MiniHadoop::MapReduce()
+{
+    mapping.Map();
+    auto sortedContainers = mapping.getSortedContainers();
+    mapping.deleteContainers();
+    using Container_type = decltype(sortedContainers.front());
+    std::vector<std::future<void>> futuresVector;
+    futuresVector.reserve(sortedContainers.size());
+    std::for_each(sortedContainers.begin(), sortedContainers.end(),[this, &futuresVector](Container_type& Container)
     {
-        in.clear();
-        in.seekg(0, std::ios_base::beg);
-        for(auto i = std::size_t{0}; i < pos_vec.size(); i++)
+        futuresVector.emplace_back(std::async([this, &Container]()
         {
-            if(i + 1 < pos_vec.size())
+            for(auto& line : Container)
             {
-                std::string str;
-                auto size = pos_vec[i+1] - pos_vec[i];
-                str.resize(size);
-                in.read(&str[0], size);
-                std::cout << str << std::endl << std::endl;
+                reduce.addString(line);
             }
-        }
-    }
+            Container.clear();
+        }));
+    });
+
+    using item_type = decltype(futuresVector.front());
+    std::for_each(futuresVector.begin(), futuresVector.end(),
+                  [](item_type& item)
+    {
+        item.get();
+    });
+
+    reduce.reduce();
 }

@@ -9,7 +9,8 @@ endif()
 find_package(Threads)
 
 aux_source_directory(. SRC_LIST)
-add_executable(${PROJECT_NAME} ${SRC_LIST})
+set(HEADERS Mapping.h MiniHadoop.h Reduce.h MapHandle.h threadsafe_multiset.h)
+add_executable(${PROJECT_NAME} ${SRC_LIST} ${HEADERS})
 
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

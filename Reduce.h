@@ -4,15 +4,22 @@
 */
 #pragma once
 #include <vector>
-#include <fstream>
-#include "functional"
+#include "threadsafe_multiset.h"
+#include <string>
 
 class Reduce
 {
 public:
-    Reduce(std::function<void()> reduceHandle_);
+    Reduce(int rnum_);
+    void addString(std::string line);
+
+    void reduce();
 
 private:
-    std::function<void()> reduceHandle;
+    const int rnum;
+    std::vector<ThreadSave_MultiSet<std::string> > multisetVector;
+    std::hash<std::string> hash_fn;
+
+    std::mutex coutMutex;//delete!
 };
 

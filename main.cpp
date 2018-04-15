@@ -23,8 +23,8 @@ int main(int argc, char *argv[])
             //        {
 
             //        }
-                    auto mnum = int{1};
-                    auto rnum = int{8};
+                    auto mnum = int{7};
+                    auto rnum = int{5};
                     int endPos = in.tellg();
 //                    std::cout << "endPos " << endPos << std::endl;
                     in.clear();
@@ -43,22 +43,21 @@ int main(int argc, char *argv[])
                         in.seekg(part, std::ios_base::cur);
                         if(in.tellg() < endPos)
                         {
-                            char c = in.peek();
-                            int tellg = in.tellg();
-                            while(c != '\n' &&
-                                  tellg > pos_vec[pos_vec.size() - 1])
+                            while(in.peek() != '\n' &&
+                                  in.tellg() > pos_vec[pos_vec.size() - 1])
                             {
                                 in.unget();
-                                c = in.peek();
-                                tellg = in.tellg();
                             }
+                            if(in.peek() == '\n')
+                                in.get();
                             if(pos_vec[pos_vec.size() - 1] >= in.tellg())
                             {
-                                char c = in.get();
-                                while(c != '\n' && in.tellg() != -1)
+
+                                while(in.peek() != '\n' && in.tellg() != -1)
                                 {
-                                    c = in.get();
+                                    in.get();
                                 }
+                                in.get();
                             }
                             newPos = in.tellg();
                         }
@@ -78,10 +77,7 @@ int main(int argc, char *argv[])
 
                     if(pos_vec[pos_vec.size() - 1] != endPos)
                     {
-                        if(pos_vec.size() != mnum + 1)
-                            pos_vec.emplace_back(endPos);
-                        else
-                            pos_vec[pos_vec.size() - 1] = endPos;
+                        pos_vec.emplace_back(endPos);
                     }
 
 
@@ -89,11 +85,8 @@ int main(int argc, char *argv[])
 //                        std::cout << "item: " << item << std::endl;
 //                    std::cout << "size: " << pos_vec.size() << std::endl;
 
-                    in.clear();
-                    in.seekg(0, std::ios_base::beg);
-                    in.close();
-
-                    MiniHadoop hadoop1(std::move(src), std::move(pos_vec), rnum, [](){}, [](){});
+                    MiniHadoop hadoop1(std::move(src), std::move(pos_vec), rnum);
+                    hadoop1.MapReduce();
         }
     }
     catch (std::exception& e)
