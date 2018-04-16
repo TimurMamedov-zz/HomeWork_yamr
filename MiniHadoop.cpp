@@ -16,6 +16,8 @@ void MiniHadoop::MapReduce()
     mapping.Map();
     auto sortedContainers = mapping.getSortedContainers();
     mapping.deleteContainers();
+
+
     using Container_type = decltype(sortedContainers.front());
     std::vector<std::future<void>> futuresVector;
     futuresVector.reserve(sortedContainers.size());
@@ -36,5 +38,5 @@ void MiniHadoop::MapReduce()
         future.get();
     }
 
-//    reduce.reduce();
+    reduce.reduce();
 }
