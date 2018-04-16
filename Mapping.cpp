@@ -71,11 +71,17 @@ void Mapping::Map()
                 }));
             }
         }
-
-        using item_type = decltype(futuresVector.front());
-        std::for_each(futuresVector.begin(), futuresVector.end(), [this](item_type& item)
+        std::cout << futuresVector.size() << std::endl;
+        for(auto& future : futuresVector)
         {
-            multisetVector.emplace_back(item.get());
-        });
+            auto multiset = future.get();
+            multisetVector.emplace_back(std::move(multiset));
+        }
+
+//        using item_type = decltype(futuresVector.front());
+//        std::for_each(futuresVector.begin(), futuresVector.end(), [this](item_type& item)
+//        {
+//            multisetVector.emplace_back(item.get());
+//        });
     }
 }

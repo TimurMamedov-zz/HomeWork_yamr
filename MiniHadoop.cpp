@@ -31,12 +31,10 @@ void MiniHadoop::MapReduce()
         }));
     });
 
-    using item_type = decltype(futuresVector.front());
-    std::for_each(futuresVector.begin(), futuresVector.end(),
-                  [](item_type& item)
+    for(auto& future : futuresVector)
     {
-        item.get();
-    });
+        future.get();
+    }
 
-    reduce.reduce();
+//    reduce.reduce();
 }
