@@ -11,6 +11,7 @@ install:
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
 
 before_script:
+- sudo apt-get install libboost-program-options-dev
 - sudo apt-get install libasio-dev
 - sudo apt-get install libboost-test-dev
 
