@@ -13,7 +13,7 @@ public:
     Reduce(int rnum_);
     void addString(std::string line);
 
-    void reduce();
+    std::size_t reduce();
 
 private:
     const int rnum;

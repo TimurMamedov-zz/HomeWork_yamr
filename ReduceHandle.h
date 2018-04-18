@@ -6,15 +6,17 @@
 #include <set>
 #include <string>
 #include <unordered_map>
+#include <sstream>
 
 class ReduceHandle
 {
 public:
     ReduceHandle();
     void operator()(std::string line);
-    void save();
+    std::size_t save();
+
 private:
-    std::multiset<std::string> stringsMultiset;
+    std::stringstream ss;
     std::unordered_map<std::string, std::string> prefixHash;
     std::size_t minPrefix = 1;
 };

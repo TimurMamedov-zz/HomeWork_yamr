@@ -55,7 +55,8 @@ void Mapping::Map()
             {
                 auto begin = i;
                 auto end = i + 1;
-                futuresVector.emplace_back(std::async([this, begin, end]()
+                futuresVector.emplace_back(std::async(std::launch::async,
+                                                      [this, begin, end]()
                 {
                     std::ifstream in(path, std::ios::binary | std::ios::ate);
                     in.seekg(pos_vec[begin], std::ios_base::beg);
@@ -70,7 +71,7 @@ void Mapping::Map()
                     return mapHandle.getSortedContainer();
                 }));
             }
-        }
+        }       
 
         for(auto& future : futuresVector)
         {

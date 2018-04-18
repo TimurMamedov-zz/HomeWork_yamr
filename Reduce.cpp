@@ -2,6 +2,7 @@
 #include <iostream>
 #include <future>
 #include <algorithm>
+#include <queue>
 #include "ReduceHandle.h"
 
 Reduce::Reduce(int rnum_)
@@ -14,26 +15,17 @@ void Reduce::addString(std::string line)
     multisetVector[hash_fn(line)%rnum].push(line);
 }
 
-void Reduce::reduce()
+std::size_t Reduce::reduce()
 {
-    std::vector<std::future<void>> futuresVector;
+    std::vector<std::future<std::size_t> > futuresVector;
     futuresVector.reserve(rnum);
     for(auto i = std::size_t{0}; i < rnum; i++)
     {
         auto& multiset = multisetVector[i].getNonThreadSave_MultiSet();
-//        using item_type = std::multiset<std::string>::value_type;
-//        std::for_each(multiset.begin(), multiset.end(), [this](const item_type& item)
-//        {
-//            std::cout << item << std::endl;
-//        });
-//        std::cout << std::endl << std::endl;
-        futuresVector.emplace_back(std::async([this,  multiset]()
+
+        futuresVector.emplace_back(std::async(std::launch::async,
+                                              [this,  multiset]()
         {
-//            using item_type = std::multiset<std::string>::value_type;
-//            std::for_each(multiset.begin(), multiset.end(), [this](const item_type& item)
-//            {
-//                std::cout << item << std::endl;
-//            });
             if(!multiset.empty())
             {
                 ReduceHandle reduceHandle;
@@ -41,18 +33,16 @@ void Reduce::reduce()
                 {
                     reduceHandle(line);
                 }
-//                using item_type = std::multiset<std::string>::value_type;
-//                std::for_each(multiset.begin(), multiset.end(), [this, &reduceHandle](const item_type& item)
-//                {
-//                    reduceHandle(item);
-//                });
-                reduceHandle.save();
+                return reduceHandle.save();
             }
         }));
     }
 
+    std::priority_queue<std::size_t> prefixesQueue;
     for(auto& future : futuresVector)
-        future.get();
+        prefixesQueue.emplace(future.get());
+
+    return prefixesQueue.top();
 }
 
 

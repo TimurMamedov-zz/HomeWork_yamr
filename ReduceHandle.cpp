@@ -1,6 +1,5 @@
 #include "ReduceHandle.h"
 #include <fstream>
-#include <sstream>
 #include <algorithm>
 #include <thread>
 #include <atomic>
@@ -16,20 +15,18 @@ void ReduceHandle::operator()(std::string line)
     auto iterator = prefixHash.find(line.substr(0, minPrefix));
     if(iterator != prefixHash.end())
     {
-        if(line.size() < minPrefix)
+        if(line.size() > minPrefix)
         {
             while(iterator != prefixHash.end())
             {
                 minPrefix++;
+                auto tempHash = prefixHash;
+                prefixHash.clear();
 
-                for(auto& pair : prefixHash)
+                for(auto& pair : tempHash)
                 {
-                    if(pair.first.size() < minPrefix)
-                    {
-                        auto tempLine = pair.second;
-                        prefixHash.erase(pair.first);
-                        prefixHash.emplace(tempLine.substr(0, minPrefix), tempLine);
-                    }
+                    prefixHash.emplace(pair.second.substr(0, minPrefix),
+                                       pair.second);
                 }
                 iterator = prefixHash.find(line.substr(0, minPrefix));
 
@@ -38,33 +35,18 @@ void ReduceHandle::operator()(std::string line)
             }
         }
     }
-    else
-        prefixHash.emplace(line.substr(0, minPrefix), line);
+    prefixHash.emplace(line.substr(0, minPrefix), line);
 
-
-    stringsMultiset.emplace(std::move(line));
+    ss << line << "\n";
 }
 
-void ReduceHandle::save()
+std::size_t ReduceHandle::save()
 {
     std::ofstream file;
-    std::stringstream ss;
-    ss << count;
-    count++;
-    file.open(std::string("reduce_") + ss.str() + ".txt");
-    ss.str(std::string());
-
-    if(!stringsMultiset.empty())
-    {
-        auto last = stringsMultiset.end();
-        last--;
-        for(auto it = stringsMultiset.begin(); it != last; it++)
-        {
-            ss << *it << "\n";
-        }
-        ss << *last;
-    }
+    file.open(std::string("reduce_") + std::to_string(count++) + ".txt");
 
     file << ss.str();
     file.close();
+    ss.str(std::string());
+    return minPrefix;
 }

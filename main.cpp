@@ -98,8 +98,8 @@ int main(int argc, char *argv[])
                 }
                 in.close();
 
-                MiniHadoop hadoop1(std::move(src), std::move(pos_vec), rnum);
-                hadoop1.MapReduce();
+                MiniHadoop hadoop(std::move(src), std::move(pos_vec), rnum);
+                hadoop.MapReduce();
             }
 
         }

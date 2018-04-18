@@ -21,33 +21,25 @@ void MiniHadoop::MapReduce()
     using Container_type = decltype(sortedContainers.front());
     std::vector<std::future<void>> futuresVector;
     futuresVector.reserve(sortedContainers.size());
+
     std::for_each(sortedContainers.begin(), sortedContainers.end(),
-                  [this](Container_type& Container)
+                  [this, &futuresVector](Container_type& Container)
     {
-        for(auto& line : Container)
+        futuresVector.emplace_back(std::async(std::launch::async,
+                                              [this, &Container]()
         {
-            reduce.addString(line);
-        }
-        Container.clear();
+            for(auto& line : Container)
+            {
+                reduce.addString(line);
+            }
+            Container.clear();
+        }));
     });
 
-//    std::for_each(sortedContainers.begin(), sortedContainers.end(),
-//                  [this, &futuresVector](Container_type& Container)
-//    {
-//        futuresVector.emplace_back(std::async([this, &Container]()
-//        {
-//            for(auto& line : Container)
-//            {
-//                reduce.addString(line);
-//            }
-//            Container.clear();
-//        }));
-//    });
+    for(auto& future : futuresVector)
+    {
+        future.get();
+    }
 
-//    for(auto& future : futuresVector)
-//    {
-//        future.get();
-//    }
-
-    reduce.reduce();
+    std::cout << "Min prefix = " << reduce.reduce() << std::endl;
 }
