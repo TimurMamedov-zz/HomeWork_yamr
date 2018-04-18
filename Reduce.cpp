@@ -26,15 +26,12 @@ std::size_t Reduce::reduce()
         futuresVector.emplace_back(std::async(std::launch::async,
                                               [this,  multiset]()
         {
-            if(!multiset.empty())
+            ReduceHandle reduceHandle;
+            for(auto& line : multiset)
             {
-                ReduceHandle reduceHandle;
-                for(auto& line : multiset)
-                {
-                    reduceHandle(line);
-                }
-                return reduceHandle.save();
+                reduceHandle(line);
             }
+            return reduceHandle.save();
         }));
     }
 

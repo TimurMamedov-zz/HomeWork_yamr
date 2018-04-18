@@ -39,21 +39,18 @@ int main(int argc, char *argv[])
 {
     try
     {
-//        if (argc != 4)
-//        {
-//            std::cerr << "Usage:  yamr <src> <mnum> <rnum>\n";
-//            return 1;
-//        }
+        if (argc != 4)
+        {
+            std::cerr << "Usage:  yamr <src> <mnum> <rnum>\n";
+            return 1;
+        }
 
-//        std::string src(argv[1]);
-        std::string src("emails.txt");
+        std::string src(argv[1]);
         std::ifstream in(src, std::ios::binary | std::ios::ate);
         if(in.is_open())
         {
-//            auto mnum = std::atoi(argv[2]);
-//            auto rnum = std::atoi(argv[3]);
-            auto mnum = 5;
-            auto rnum = 5;
+            auto mnum = std::atoi(argv[2]);
+            auto rnum = std::atoi(argv[3]);
             if(mnum > 0 && rnum > 0)
             {
                 int endPos = in.tellg();
@@ -101,7 +98,6 @@ int main(int argc, char *argv[])
                 MiniHadoop hadoop(std::move(src), std::move(pos_vec), rnum);
                 hadoop.MapReduce();
             }
-
         }
     }
     catch (std::exception& e)

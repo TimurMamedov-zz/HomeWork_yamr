@@ -11,13 +11,17 @@ MiniHadoop::MiniHadoop(std::string path,
 {
 }
 
-void MiniHadoop::MapReduce()
+std::vector<std::multiset<std::string> > MiniHadoop::MapFunc()
 {
     mapping.Map();
     auto sortedContainers = mapping.getSortedContainers();
     mapping.deleteContainers();
 
+    return sortedContainers;
+}
 
+void MiniHadoop::ReduceFunc(std::vector<std::multiset<std::string> > sortedContainers)
+{
     using Container_type = decltype(sortedContainers.front());
     std::vector<std::future<void>> futuresVector;
     futuresVector.reserve(sortedContainers.size());
@@ -42,4 +46,9 @@ void MiniHadoop::MapReduce()
     }
 
     std::cout << "Min prefix = " << reduce.reduce() << std::endl;
+}
+
+void MiniHadoop::MapReduce()
+{
+    ReduceFunc(MapFunc());
 }

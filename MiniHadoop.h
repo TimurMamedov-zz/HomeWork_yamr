@@ -21,5 +21,7 @@ public:
 private:
     Mapping mapping;
     Reduce reduce;
+    std::vector<std::multiset<std::string> > MapFunc();
+    void ReduceFunc(std::vector<std::multiset<std::string> > sortedContainers);
 };
 

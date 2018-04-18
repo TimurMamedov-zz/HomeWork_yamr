@@ -11,24 +11,6 @@ Mapping::Mapping(std::string path_,
     if(!pos_vec.empty())
     {
         multisetVector.reserve(pos_vec.size() - 1);
-//        std::ifstream in(path, std::ios::binary | std::ios::ate);
-
-//        if(in.is_open())
-//        {
-//            in.clear();
-//            in.seekg(0, std::ios_base::beg);
-//            for(auto i = std::size_t{0}; i < pos_vec.size(); i++)
-//            {
-//                if(i + 1 < pos_vec.size())
-//                {
-//                    std::string str;
-//                    auto size = pos_vec[i+1] - pos_vec[i];
-//                    str.resize(size);
-//                    in.read(&str[0], size);
-//                    std::cout << str << std::endl << std::endl;
-//                }
-//            }
-//        }
     }
 }
 
