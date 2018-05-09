@@ -12,7 +12,7 @@ Reduce::Reduce(int rnum_)
 
 void Reduce::addString(std::string line)
 {
-    multisetVector[hash_fn(line)%rnum].push(line);
+    multisetVector[hash_fn(line.substr(0, 1))%rnum].push(line);
 }
 
 std::size_t Reduce::reduce()

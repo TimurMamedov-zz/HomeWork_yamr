@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
         {
             auto mnum = std::atoi(argv[2]);
             auto rnum = std::atoi(argv[3]);
+
             if(mnum > 0 && rnum > 0)
             {
                 int endPos = in.tellg();
