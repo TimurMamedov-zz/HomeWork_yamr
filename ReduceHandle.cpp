@@ -6,11 +6,11 @@
 
 static std::atomic_size_t count{0};
 
-ReduceHandle::ReduceHandle()
+ReduceHandle::ReduceHandle(const ReduceHandle & reduceHandle)
 {
 }
 
-void ReduceHandle::operator()(std::string line)
+std::string ReduceHandle::operator()(std::string line)
 {
     auto iterator = prefixHash.find(line.substr(0, minPrefix));
     if(iterator != prefixHash.end())
@@ -40,13 +40,13 @@ void ReduceHandle::operator()(std::string line)
     ss << line << "\n";
 }
 
-std::size_t ReduceHandle::save()
-{
-    std::ofstream file;
-    file.open(std::string("reduce_") + std::to_string(count++) + ".txt");
+//std::size_t ReduceHandle::save()
+//{
+//    std::ofstream file;
+//    file.open(std::string("reduce_") + std::to_string(count++) + ".txt");
 
-    file << ss.str();
-    file.close();
-    ss.str(std::string());
-    return minPrefix;
-}
+//    file << ss.str();
+//    file.close();
+//    ss.str(std::string());
+//    return minPrefix;
+//}

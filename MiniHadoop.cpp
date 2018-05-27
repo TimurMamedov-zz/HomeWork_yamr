@@ -1,54 +1,60 @@
-#include "MiniHadoop.h"
-#include <iostream>
-#include <algorithm>
-#include <future>
+//#include "MiniHadoop.h"
+//#include <iostream>
+//#include <algorithm>
+//#include <future>
 
-MiniHadoop::MiniHadoop(std::string path,
-                       std::vector<std::size_t> pos_vec,
-                       int rnum)
-    :mapping(std::move(path), std::move(pos_vec)),
-      reduce(rnum)
-{
-}
+//template<typename MapRes, typename ReduceRes>
+//MiniHadoop<MapRes, ReduceRes>::MiniHadoop(std::string&& path,
+//                       std::vector<std::size_t>&& pos_vec,
+//                       const int rnum,
+//                       std::function<MapRes(std::string)> MapHandle_,
+//                       std::function<ReduceRes(std::string)> ReduceHandle_)
 
-std::vector<std::multiset<std::string> > MiniHadoop::MapFunc()
-{
-    mapping.Map();
-    auto sortedContainers = mapping.getSortedContainers();
-    mapping.deleteContainers();
+//{
+//}
 
-    return sortedContainers;
-}
+//template<typename MapRes, typename ReduceRes>
+//std::vector<MapRes> MiniHadoop<MapRes, ReduceRes>::MapFunc()
+//{
+//    std::vector<MapRes> result;
+//    mapping.Map();
+//    auto sortedContainers = mapping.getSortedContainers();
+//    mapping.deleteContainers();
 
-void MiniHadoop::ReduceFunc(std::vector<std::multiset<std::string> > sortedContainers)
-{
-    using Container_type = decltype(sortedContainers.front());
-    std::vector<std::future<void>> futuresVector;
-    futuresVector.reserve(sortedContainers.size());
+//    return result;
+//}
 
-    std::for_each(sortedContainers.begin(), sortedContainers.end(),
-                  [this, &futuresVector](Container_type& Container)
-    {
-        futuresVector.emplace_back(std::async(std::launch::async,
-                                              [this, &Container]()
-        {
-            for(auto& line : Container)
-            {
-                reduce.addString(line);
-            }
-            Container.clear();
-        }));
-    });
+//template<typename MapRes, typename ReduceRes>
+//void MiniHadoop<MapRes, ReduceRes>::ReduceFunc(std::vector<MapRes> &&MapResult)
+//{
+//    using Container_type = decltype(sortedContainers.front());
+//    std::vector<std::future<void>> futuresVector;
+//    futuresVector.reserve(sortedContainers.size());
 
-    for(auto& future : futuresVector)
-    {
-        future.get();
-    }
+//    std::for_each(sortedContainers.begin(), sortedContainers.end(),
+//                  [this, &futuresVector](Container_type& Container)
+//    {
+//        futuresVector.emplace_back(std::async(std::launch::async,
+//                                              [this, &Container]()
+//        {
+//            for(auto& line : Container)
+//            {
+//                reduce.addString(line);
+//            }
+//            Container.clear();
+//        }));
+//    });
 
-    std::cout << "Min prefix = " << reduce.reduce() << std::endl;
-}
+//    for(auto& future : futuresVector)
+//    {
+//        future.get();
+//    }
 
-void MiniHadoop::MapReduce()
-{
-    ReduceFunc(MapFunc());
-}
+//    std::cout << "Min prefix = " << reduce.reduce() << std::endl;
+//}
+
+//template<typename MapRes, typename ReduceRes>
+//void MiniHadoop<MapRes, ReduceRes>::MapReduce()
+//{
+
+//}

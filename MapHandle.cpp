@@ -1,15 +1,11 @@
 #include "MapHandle.h"
 
-MapHandle::MapHandle()
+std::string MapHandle::operator()(std::string line)
 {
+//    multisetStrings.emplace(std::move(line));
 }
 
-void MapHandle::operator()(std::string line)
-{
-    multisetStrings.emplace(std::move(line));
-}
-
-std::multiset<std::string> MapHandle::getSortedContainer() const
-{
-    return multisetStrings;
-}
+//std::multiset<std::string> MapHandle::getSortedContainer() const
+//{
+//    return multisetStrings;
+//}

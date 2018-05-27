@@ -2,7 +2,10 @@
 #include <fstream>
 #include <vector>
 #include <thread>
+#include <type_traits>
 #include "MiniHadoop.h"
+#include "MapHandle.h"
+#include "ReduceHandle.h"
 
 void moveBack(std::vector<std::size_t>& pos_vec,
               std::ifstream& in)
@@ -96,7 +99,12 @@ int main(int argc, char *argv[])
                 }
                 in.close();
 
-                MiniHadoop hadoop(std::move(src), std::move(pos_vec), rnum);
+//                auto mapHandle = [](std::string str){return std::string{"3r32"};};
+//                auto reduceHandle = [](std::string str){return std::string{"3r32"};};
+
+                MiniHadoop<std::result_of<MapHandle(std::string)>::type,
+                        std::result_of<ReduceHandle(std::result_of<MapHandle(std::string)>::type)>::type>
+                        hadoop(std::move(src), std::move(pos_vec), rnum, MapHandle(), ReduceHandle());
                 hadoop.MapReduce();
             }
         }

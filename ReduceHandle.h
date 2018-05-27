@@ -11,9 +11,11 @@
 class ReduceHandle
 {
 public:
-    ReduceHandle();
-    void operator()(std::string line);
-    std::size_t save();
+    ReduceHandle() = default;
+    ReduceHandle(const ReduceHandle&reduceHandle);
+    ReduceHandle(ReduceHandle&& ) = default;
+    std::string operator()(std::string line);
+//    std::size_t save();
 
 private:
     std::stringstream ss;

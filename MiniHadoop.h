@@ -9,19 +9,37 @@
 #include "Mapping.h"
 #include "Reduce.h"
 
+template<typename MapRes, typename ReduceRes>
 class MiniHadoop
 {
 public:
-    MiniHadoop(std::string path,
-               std::vector<std::size_t> pos_vec,
-               int rnum);
+    MiniHadoop(std::string&& path,
+               std::vector<std::size_t>&& pos_vec,
+               const int rnum,
+               std::function<MapRes(std::string)>&& MapHandle_,
+               std::function<ReduceRes(std::string)>&& ReduceHandle_)
+        :mapping(std::move(path), std::move(pos_vec), std::move(MapHandle_)),
+          reduce(rnum, std::move(ReduceHandle_))
+    {
+    }
 
-    void MapReduce();
+    void MapReduce()
+    {
+//        ReduceFunc(std::move(MapFunc()));
+    }
 
 private:
-    Mapping mapping;
-    Reduce reduce;
-    std::vector<std::multiset<std::string> > MapFunc();
-    void ReduceFunc(std::vector<std::multiset<std::string> > sortedContainers);
+    Mapping<MapRes> mapping;
+    Reduce<ReduceRes> reduce;
+
+//    std::vector<MapRes> MapFunc()
+//    {
+//        std::vector<MapRes> mapResult = mapping.Map();
+//        return mapResult;
+//    }
+//    void ReduceFunc(std::vector<MapRes>&& MapResult)
+//    {
+//        reduce.reduce(std::move(MapResult));
+//    }
 };
 
