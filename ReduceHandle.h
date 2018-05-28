@@ -7,14 +7,19 @@
 #include <string>
 #include <unordered_map>
 #include <sstream>
+#include <vector>
 
 class ReduceHandle
 {
 public:
     ReduceHandle() = default;
-    ReduceHandle(const ReduceHandle&reduceHandle);
+    ReduceHandle(const ReduceHandle&){}
     ReduceHandle(ReduceHandle&& ) = default;
-    std::string operator()(std::string line);
+    std::string operator()(std::vector<std::string> MapResult)
+    {
+
+    }
+
 //    std::size_t save();
 
 private:

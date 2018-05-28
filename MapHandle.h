@@ -3,7 +3,7 @@
 \brief
 */
 #pragma once
-#include <set>
+#include <vector>
 #include <string>
 
 class MapHandle
@@ -12,10 +12,15 @@ public:
     MapHandle() = default;
     MapHandle(const MapHandle&) = default;
     MapHandle(MapHandle&&) = default;
-    std::string operator()(std::string line);
-//    std::multiset<std::string> getSortedContainer() const;
 
-//private:
-//    std::multiset<std::string> multisetStrings;
+    std::vector<std::string> operator()(const std::string& line)
+    {
+        std::vector<std::string> MapHandleResult;
+        for(auto i = std::size_t{0}; i < line.size(); i++)
+        {
+            MapHandleResult.emplace_back(line.substr(0, i+1));
+        }
+        return MapHandleResult;
+    }
 };
 

@@ -1,44 +1,44 @@
-#include "ReduceHandle.h"
-#include <fstream>
-#include <algorithm>
-#include <thread>
-#include <atomic>
+//#include "ReduceHandle.h"
+//#include <fstream>
+//#include <algorithm>
+//#include <thread>
+//#include <atomic>
 
-static std::atomic_size_t count{0};
+//static std::atomic_size_t count{0};
 
-ReduceHandle::ReduceHandle(const ReduceHandle & reduceHandle)
-{
-}
+//ReduceHandle::ReduceHandle(const ReduceHandle & reduceHandle)
+//{
+//}
 
-std::string ReduceHandle::operator()(std::string line)
-{
-    auto iterator = prefixHash.find(line.substr(0, minPrefix));
-    if(iterator != prefixHash.end())
-    {
-        if(line.size() > minPrefix)
-        {
-            while(iterator != prefixHash.end())
-            {
-                minPrefix++;
-                auto tempHash = prefixHash;
-                prefixHash.clear();
+//std::string ReduceHandle::operator()(std::vector<std::tuple<std::string, std::string> >)
+//{
+//    auto iterator = prefixHash.find(line.substr(0, minPrefix));
+//    if(iterator != prefixHash.end())
+//    {
+//        if(line.size() > minPrefix)
+//        {
+//            while(iterator != prefixHash.end())
+//            {
+//                minPrefix++;
+//                auto tempHash = prefixHash;
+//                prefixHash.clear();
 
-                for(auto& pair : tempHash)
-                {
-                    prefixHash.emplace(pair.second.substr(0, minPrefix),
-                                       pair.second);
-                }
-                iterator = prefixHash.find(line.substr(0, minPrefix));
+//                for(auto& pair : tempHash)
+//                {
+//                    prefixHash.emplace(pair.second.substr(0, minPrefix),
+//                                       pair.second);
+//                }
+//                iterator = prefixHash.find(line.substr(0, minPrefix));
 
-                if(line.size() < minPrefix)
-                    break;
-            }
-        }
-    }
-    prefixHash.emplace(line.substr(0, minPrefix), line);
+//                if(line.size() < minPrefix)
+//                    break;
+//            }
+//        }
+//    }
+//    prefixHash.emplace(line.substr(0, minPrefix), line);
 
-    ss << line << "\n";
-}
+//    ss << line << "\n";
+//}
 
 //std::size_t ReduceHandle::save()
 //{

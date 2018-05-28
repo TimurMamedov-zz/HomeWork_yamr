@@ -99,12 +99,30 @@ int main(int argc, char *argv[])
                 }
                 in.close();
 
-//                auto mapHandle = [](std::string str){return std::string{"3r32"};};
-//                auto reduceHandle = [](std::string str){return std::string{"3r32"};};
+                using MapRes = std::result_of<MapHandle(std::string)>::type;
+                using ReduceRes = std::result_of<ReduceHandle(MapRes)>::type;
 
-                MiniHadoop<std::result_of<MapHandle(std::string)>::type,
-                        std::result_of<ReduceHandle(std::result_of<MapHandle(std::string)>::type)>::type>
-                        hadoop(std::move(src), std::move(pos_vec), rnum, MapHandle(), ReduceHandle());
+                auto MapSortFunc = [](const MapRes& left, const MapRes& right)
+                {
+                    if(!left.empty() && !right.empty())
+                        return std::get<1>(left[0]) > std::get<1>(right[0]);
+                    else
+                    {
+                        if(!left.empty() && right.empty())
+                        {
+                            return true;
+                        }
+                        else if(left.empty() && !right.empty())
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                };
+
+                MiniHadoop<MapRes, ReduceRes>
+                        hadoop(std::move(src), std::move(pos_vec), rnum,
+                               MapHandle(), ReduceHandle(), std::move(MapSortFunc));
                 hadoop.MapReduce();
             }
         }

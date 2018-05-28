@@ -17,8 +17,10 @@ class Mapping
 public:
     Mapping(std::string path_,
             std::vector<std::size_t> pos_vec_,
-            std::function<MapRes(std::string)>&& MapHandle_)
-        :path(std::move(path_)), pos_vec(pos_vec_), MapHandle(MapHandle_)
+            std::function<MapRes(std::string)>&& MapHandle_,
+            std::function<bool(const MapRes&, const MapRes&)>&& MapSortFunc_)
+        :path(std::move(path_)), pos_vec(pos_vec_),
+          MapHandle(std::move(MapHandle_)), MapSortFunc(std::move(MapSortFunc_))
     {
 
     }
@@ -50,6 +52,7 @@ public:
                             temp.emplace_back(MapHandle(std::move(line)));
                         }
                         in.close();
+                        std::sort(temp.begin(), temp.end(), MapSortFunc);
                         return temp;
                     }));
                 }
@@ -66,6 +69,8 @@ public:
 
 private:
     std::function<MapRes(std::string)> MapHandle;
+    std::function<bool(const MapRes&, const MapRes&)> MapSortFunc;
+
     const std::string path;
     const std::vector<std::size_t> pos_vec;
 
