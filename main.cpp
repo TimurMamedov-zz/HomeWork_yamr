@@ -100,29 +100,31 @@ int main(int argc, char *argv[])
                 in.close();
 
                 using MapRes = std::result_of<MapHandle(std::string)>::type;
-                using ReduceRes = std::result_of<ReduceHandle(MapRes)>::type;
+                using ReduceRes = std::result_of<ReduceHandle(std::string)>::type;
 
-                auto MapSortFunc = [](const MapRes& left, const MapRes& right)
+                auto MapGetFunc = [](std::vector<std::string>& temp, const MapRes& mapRes)
                 {
-                    if(!left.empty() && !right.empty())
-                        return std::get<1>(left[0]) > std::get<1>(right[0]);
+                    temp.insert(std::end(temp), std::begin(mapRes), std::end(mapRes));
+                };
+
+                auto ReduceGetFunc = [](std::vector<std::string>& temp,
+                        const ReduceRes& mapRes,
+                        std::size_t& minPrefix)
+                {
+                    if(std::get<0>(mapRes))
+                    {
+                        minPrefix = std::get<1>(mapRes).size() + 1;
+                    }
                     else
                     {
-                        if(!left.empty() && right.empty())
-                        {
-                            return true;
-                        }
-                        else if(left.empty() && !right.empty())
-                        {
-                            return false;
-                        }
+                        temp.push_back(std::get<1>(mapRes));
                     }
-                    return true;
                 };
 
                 MiniHadoop<MapRes, ReduceRes>
                         hadoop(std::move(src), std::move(pos_vec), rnum,
-                               MapHandle(), ReduceHandle(), std::move(MapSortFunc));
+                               MapHandle(), ReduceHandle(),
+                               std::move(MapGetFunc), std::move(ReduceGetFunc));
                 hadoop.MapReduce();
             }
         }

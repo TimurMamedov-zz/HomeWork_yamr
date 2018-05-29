@@ -16,11 +16,12 @@ public:
     MiniHadoop(std::string&& path,
                std::vector<std::size_t>&& pos_vec,
                const int rnum,
-               std::function<MapRes(std::string)>&& MapHandle_,
-               std::function<ReduceRes(MapRes)>&& ReduceHandle_,
-               std::function<bool(const MapRes&, const MapRes&)>&& MapSortFunc_)
-        :mapping(std::move(path), std::move(pos_vec), std::move(MapHandle_), std::move(MapSortFunc_)),
-          reduce(rnum, std::move(ReduceHandle_))
+               std::function<MapRes(const std::string&)>&& MapHandle_,
+               std::function<ReduceRes(const std::string&)>&& ReduceHandle_,
+               std::function<void(std::vector<std::string>&, const MapRes&)>&& MapGetFunc_,
+               std::function<void(std::vector<std::string>&, const ReduceRes&, std::size_t&)>&& ReduceGetFunc_)
+        :mapping(std::move(path), std::move(pos_vec), std::move(MapHandle_), std::move(MapGetFunc_)),
+          reduce(rnum, std::move(ReduceHandle_), std::move(ReduceGetFunc_))
     {
     }
 
@@ -33,7 +34,7 @@ public:
 
 private:
     Mapping<MapRes> mapping;
-    Reduce<ReduceRes, MapRes> reduce;
+    Reduce<ReduceRes> reduce;
 
 //    std::vector<MapRes> MapFunc()
 //    {

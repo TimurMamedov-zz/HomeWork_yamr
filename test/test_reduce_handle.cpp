@@ -3,7 +3,6 @@
 #include <boost/test/unit_test.hpp>
 
 #include "../ReduceHandle.h"
-#include "../ReduceHandle.cpp"
 
 BOOST_AUTO_TEST_SUITE(Test_ReduceHandle)
 

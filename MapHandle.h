@@ -20,6 +20,7 @@ public:
         {
             MapHandleResult.emplace_back(line.substr(0, i+1));
         }
+        std::sort(MapHandleResult.begin(), MapHandleResult.end());
         return MapHandleResult;
     }
 };
