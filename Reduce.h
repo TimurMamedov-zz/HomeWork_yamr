@@ -20,14 +20,14 @@ public:
            std::function<void(std::vector<std::string>&, const ReduceRes&, std::size_t&)>&& ReduceGetFunc_)
         :rnum(rnum_),
           ReduceHandle(std::move(ReduceHandle_)),
-          ReduceGetFunc(std::move(ReduceGetFunc_)),
-          multisetVector(rnum)
+          ReduceGetFunc(std::move(ReduceGetFunc_))
     {
     }
 
     void shuffle(std::vector<std::vector<std::string>>&& MapResult)
     {
         std::vector<std::future<void>> futuresVector;
+        multisetVector.resize(rnum);
 
         std::for_each(MapResult.begin(), MapResult.end(),
                       [this, &futuresVector](std::vector<std::string>& strings)
@@ -35,7 +35,7 @@ public:
             futuresVector.emplace_back(std::async(std::launch::async,
                                                   [this, &strings]()
             {
-                for(auto& line : strings)
+                for(auto&& line : strings)
                 {
                     multisetVector[hash_fn(line)%rnum].push(line);
                 }
@@ -43,7 +43,7 @@ public:
             }));
         });
 
-        for(auto& future : futuresVector)
+        for(auto&& future : futuresVector)
         {
             future.get();
         }
@@ -52,17 +52,17 @@ public:
     void reduce()
     {
         std::vector<std::future<void> > futuresVector;
-        futuresVector.reserve(rnum);
+        futuresVector.resize(rnum);
         for(auto i = std::size_t{0}; i < rnum; i++)
         {
             auto& multiset = multisetVector[i].getNonThreadSave_MultiSet();
 
-            futuresVector.emplace_back(std::async(std::launch::async,
-                                                  [this,  multiset]()
+            futuresVector[i] = std::async(std::launch::async,
+                                                  [this,  &multiset]()
             {
                 std::vector<std::string> temp;
                 std::size_t minPrefix = 1;
-                for(auto& line : multiset)
+                for(auto&& line : multiset)
                 {
                     ReduceGetFunc(temp, ReduceHandle(line), minPrefix);
                 }
@@ -74,7 +74,12 @@ public:
 
                 std::lock_guard<std::mutex> lk(coutMutex);
                 std::cout << minPrefix << " ";
-            }));
+            });
+        }
+
+        for(auto&& future : futuresVector)
+        {
+            future.get();
         }
     }
 

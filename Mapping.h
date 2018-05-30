@@ -74,9 +74,5 @@ private:
 
     const std::string path;
     const std::vector<std::size_t> pos_vec;
-
-//    std::mutex coutMutex;
-
-//    std::vector<std::multiset<std::string> > multisetVector;
 };
 

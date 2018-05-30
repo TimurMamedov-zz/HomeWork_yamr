@@ -1,8 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <thread>
-#include <type_traits>
 #include "MiniHadoop.h"
 #include "MapHandle.h"
 #include "ReduceHandle.h"
@@ -113,7 +111,9 @@ int main(int argc, char *argv[])
                 {
                     if(std::get<0>(mapRes))
                     {
-                        minPrefix = std::get<1>(mapRes).size() + 1;
+                        auto currMin = std::get<1>(mapRes).size() + 1;
+                        if(currMin > minPrefix)
+                            minPrefix = currMin;
                     }
                     else
                     {

@@ -8,7 +8,7 @@ endif()
 
 find_package(Threads)
 
-add_subdirectory(test)
+#add_subdirectory(test)
 
 aux_source_directory(. SRC_LIST)
 set(HEADERS Mapping.h MiniHadoop.h Reduce.h MapHandle.h ReduceHandle.h threadsafe_multiset.h)

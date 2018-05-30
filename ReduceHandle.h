@@ -3,11 +3,8 @@
 \brief
 */
 #pragma once
-#include <set>
 #include <tuple>
 #include <string>
-#include <unordered_map>
-#include <sstream>
 #include <vector>
 
 class ReduceHandle
@@ -18,7 +15,7 @@ public:
     ReduceHandle(ReduceHandle&& ) = default;
     std::tuple<bool, std::string> operator()(const std::string& line)
     {
-        static std::string prevStr;
+        thread_local static std::string prevStr;
         if(first)
         {
             if(prevStr == line)
@@ -28,15 +25,13 @@ public:
             prevStr = line;
             return std::make_tuple(false, prevStr);
         }
-        first = true;
+        else
+            first = true;
         prevStr = line;
         return std::make_tuple(false, prevStr);
     }
 
 private:
     bool first = false;
-    std::stringstream ss;
-    std::unordered_map<std::string, std::string> prefixHash;
-    std::size_t minPrefix = 1;
 };
 

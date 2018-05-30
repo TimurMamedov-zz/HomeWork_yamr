@@ -17,10 +17,10 @@ public:
     ThreadSave_MultiSet& operator =(const ThreadSave_MultiSet& ) = delete;
     ~ThreadSave_MultiSet() = default;
 
-    void push(T new_value)
+    void push(const T& new_value)
     {
         std::lock_guard<std::mutex> lk(mt);
-        multiset.emplace(std::move(new_value));
+        multiset.insert(new_value);
     }
 
     std::multiset<T>& getNonThreadSave_MultiSet()

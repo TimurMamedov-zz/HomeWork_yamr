@@ -29,22 +29,10 @@ public:
     {
         reduce.shuffle(mapping.Map());
         reduce.reduce();
-//        ReduceFunc(std::move(MapFunc()));
     }
 
 private:
     Mapping<MapRes> mapping;
     Reduce<ReduceRes> reduce;
-
-//    std::vector<MapRes> MapFunc()
-//    {
-//        std::vector<MapRes> mapResult = mapping.Map();
-//        return mapResult;
-//    }
-
-//    void ReduceFunc(std::vector<MapRes>&& MapResult)
-//    {
-//        reduce.reduce(std::move(MapResult));
-//    }
 };
 
