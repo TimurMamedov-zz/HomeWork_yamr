@@ -19,9 +19,9 @@ public:
                std::function<MapRes(const std::string&)>&& MapHandle_,
                std::function<ReduceRes(const std::string&)>&& ReduceHandle_,
                std::function<void(std::vector<std::string>&, const MapRes&)>&& MapGetFunc_,
-               std::function<void(std::vector<std::string>&, const ReduceRes&, std::size_t&)>&& ReduceGetFunc_)
+               std::function<void(std::ofstream &, const ReduceRes&)>&& ReduceSaveFunc_)
         :mapping(std::move(path), std::move(pos_vec), std::move(MapHandle_), std::move(MapGetFunc_)),
-          reduce(rnum, std::move(ReduceHandle_), std::move(ReduceGetFunc_))
+          reduce(rnum, std::move(ReduceHandle_), std::move(ReduceSaveFunc_))
     {
     }
 

@@ -17,10 +17,10 @@ class Reduce
 public:
     Reduce(const int rnum_,
            std::function<ReduceRes(const std::string&)>&& ReduceHandle_,
-           std::function<void(std::vector<std::string>&, const ReduceRes&, std::size_t&)>&& ReduceGetFunc_)
+           std::function<void(std::ofstream &, const ReduceRes&)>&& ReduceSaveFunc_)
         :rnum(rnum_),
           ReduceHandle(std::move(ReduceHandle_)),
-          ReduceGetFunc(std::move(ReduceGetFunc_))
+          ReduceSaveFunc(std::move(ReduceSaveFunc_))
     {
     }
 
@@ -60,20 +60,19 @@ public:
             futuresVector[i] = std::async(std::launch::async,
                                                   [this,  &multiset]()
             {
-                std::vector<std::string> temp;
-                std::size_t minPrefix = 1;
-                for(auto&& line : multiset)
+                if(!multiset.empty())
                 {
-                    ReduceGetFunc(temp, ReduceHandle(line), minPrefix);
+                    auto last = --multiset.end();
+                    for(auto it = multiset.begin(); it != last; ++it)
+                    {
+                        ReduceHandle(*it);
+                    }
+                    auto&& temp = ReduceHandle(*last);
+                    std::ofstream file;
+                    file.open(std::string("reduce_") + std::to_string(count++) + ".txt");
+                    ReduceSaveFunc(file, temp);
+                    file.close();
                 }
-                std::ofstream file;
-                file.open(std::string("reduce_") + std::to_string(count++) + ".txt");
-                for(auto&& line : temp)
-                    file << line << "\n";
-                file.close();
-
-                std::lock_guard<std::mutex> lk(coutMutex);
-                std::cout << minPrefix << " ";
             });
         }
 
@@ -85,7 +84,7 @@ public:
 
 private:
     std::function<ReduceRes(const std::string&)> ReduceHandle;
-    std::function<void(std::vector<std::string>&, const ReduceRes&, std::size_t&)> ReduceGetFunc;
+    std::function<void(std::ofstream &, const ReduceRes&)> ReduceSaveFunc;
     const int rnum;
     std::vector<ThreadSave_MultiSet<std::string> > multisetVector;
     std::hash<std::string> hash_fn;

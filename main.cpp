@@ -105,26 +105,19 @@ int main(int argc, char *argv[])
                     temp.insert(std::end(temp), std::begin(mapRes), std::end(mapRes));
                 };
 
-                auto ReduceGetFunc = [](std::vector<std::string>& temp,
-                        const ReduceRes& mapRes,
-                        std::size_t& minPrefix)
+                auto ReduceSaveFunc = [](std::ofstream &file,
+                        const ReduceRes& reduceRes)
                 {
-                    if(std::get<0>(mapRes))
-                    {
-                        auto currMin = std::get<1>(mapRes).size() + 1;
-                        if(currMin > minPrefix)
-                            minPrefix = currMin;
-                    }
-                    else
-                    {
-                        temp.push_back(std::get<1>(mapRes));
-                    }
+                    static std::mutex coutMutex;
+                    file << reduceRes;
+                    std::lock_guard<std::mutex> lk(coutMutex);
+                    std::cout << reduceRes << " ";
                 };
 
                 MiniHadoop<MapRes, ReduceRes>
                         hadoop(std::move(src), std::move(pos_vec), rnum,
                                MapHandle(), ReduceHandle(),
-                               std::move(MapGetFunc), std::move(ReduceGetFunc));
+                               std::move(MapGetFunc), std::move(ReduceSaveFunc));
                 hadoop.MapReduce();
             }
         }

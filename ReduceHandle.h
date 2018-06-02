@@ -13,22 +13,26 @@ public:
     ReduceHandle() = default;
     ReduceHandle(const ReduceHandle&){}
     ReduceHandle(ReduceHandle&& ) = default;
-    std::tuple<bool, std::string> operator()(const std::string& line)
+    std::size_t operator()(const std::string& line)
     {
         thread_local static std::string prevStr;
+        thread_local static std::size_t minPrefix = 1;
+
         if(first)
         {
             if(prevStr == line)
             {
-                return std::make_tuple(true, prevStr);
+                auto currMinPrefix = line.size() + 1;
+                if(currMinPrefix > minPrefix)
+                    minPrefix = currMinPrefix;
             }
             prevStr = line;
-            return std::make_tuple(false, prevStr);
         }
         else
             first = true;
         prevStr = line;
-        return std::make_tuple(false, prevStr);
+
+        return minPrefix;
     }
 
 private:
